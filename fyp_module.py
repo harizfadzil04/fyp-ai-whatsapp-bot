@@ -95,3 +95,4 @@ def continue_thesis(client, topic, new_input):
     )
     return ai_response.choices[0].message.content
 
+
