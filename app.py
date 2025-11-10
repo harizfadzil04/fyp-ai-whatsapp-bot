@@ -1,64 +1,41 @@
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
-from waitress import serve
 from openai import OpenAI
-import os
 from waitress import serve
+import os
 
-# Initialize Flask app
+# Import the FYP logic
+from fyp_module import handle_fyp_query
+
+# Flask app
 app = Flask(__name__)
 
-# Set your OpenAI API key (recommended: set via environment variable in Railway)
+# Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Bot is running"
+    return "Aeromentor is online and ready to assist students!"
 
-@app.route("/bot", methods=["POST", "GET"])
+@app.route("/bot", methods=["POST"])
 def bot():
-    if request.method == "POST":
-        incoming_msg = request.values.get("Body", "").strip()
-        print(f"Incoming message: {incoming_msg}")
+    incoming_msg = request.values.get("Body", "").strip()
+    response = MessagingResponse()
 
-        from twilio.twiml.messaging_response import MessagingResponse
-        response = MessagingResponse()
+    try:
+        # Directly send message to FYP module (you can expand later to other modules)
+        reply = handle_fyp_query(client, incoming_msg)
+    except Exception as e:
+        print(f"Error: {e}")
+        reply = "⚠️ Sorry, I encountered an error. Please try again later."
 
-        try:
-            from openai import OpenAI
-            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-          ai_response = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[
-        {
-            "role": "system",
-            "content": (
-                "You are Aeromentor — an AI mentor that helps aircraft maintenance students. "
-                "You specialize in guiding users with final year projects, especially related to "
-                "airframes, monocoque, semi-monocoque structures, and propeller design. "
-                "Be friendly, concise, and professional like a knowledgeable aviation engineer."
-            )
-        },
-        {"role": "user", "content": incoming_msg}
-    ]
-)
-
-
-            bot_reply = ai_response.choices[0].message.content
-        except Exception as e:
-            print(f"Error: {e}")
-            bot_reply = "⚠️ Sorry, I had a problem generating a response."
-
-        response.message(bot_reply)
-        return str(response)
-
-    return "Bot endpoint is ready."
+    response.message(reply)
+    return str(response)
 
 if __name__ == "__main__":
-    from waitress import serve
     serve(app, host="0.0.0.0", port=8080)
+
+
 
 
 
