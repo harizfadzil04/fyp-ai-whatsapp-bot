@@ -29,13 +29,22 @@ def bot():
             from openai import OpenAI
             client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-            ai_response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": "You are a helpful WhatsApp assistant."},
-                    {"role": "user", "content": incoming_msg}
-                ]
+          ai_response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {
+            "role": "system",
+            "content": (
+                "You are Aeromentor — an AI mentor that helps aircraft maintenance students. "
+                "You specialize in guiding users with final year projects, especially related to "
+                "airframes, monocoque, semi-monocoque structures, and propeller design. "
+                "Be friendly, concise, and professional like a knowledgeable aviation engineer."
             )
+        },
+        {"role": "user", "content": incoming_msg}
+    ]
+)
+
 
             bot_reply = ai_response.choices[0].message.content
         except Exception as e:
@@ -50,6 +59,8 @@ def bot():
 if __name__ == "__main__":
     from waitress import serve
     serve(app, host="0.0.0.0", port=8080)
+
+
 
 
 
