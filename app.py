@@ -20,41 +20,35 @@ def bot():
         incoming_msg = request.values.get("Body", "").strip()
         print(f"Incoming message: {incoming_msg}")
 
+        from twilio.twiml.messaging_response import MessagingResponse
+        response = MessagingResponse()
+
         try:
-            # Send user message to OpenAI GPT
-         try:
-    from openai import OpenAI
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            from openai import OpenAI
+            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    ai_response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are a helpful WhatsApp bot."},
-            {"role": "user", "content": incoming_msg}
-        ]
-    )
+            ai_response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a helpful WhatsApp assistant."},
+                    {"role": "user", "content": incoming_msg}
+                ]
+            )
 
-    bot_reply = ai_response.choices[0].message.content
-except Exception as e:
-    print(f"Error: {e}")
-    bot_reply = "⚠️ Sorry, I had a problem generating a response. Please try again later."
-
-            bot_reply = ai_response["choices"][0]["message"]["content"].strip()
-
+            bot_reply = ai_response.choices[0].message.content
         except Exception as e:
             print(f"Error: {e}")
-            bot_reply = "⚠️ Sorry, I had a problem generating a response. Please try again later."
+            bot_reply = "⚠️ Sorry, I had a problem generating a response."
 
-        # Send the AI's reply back to WhatsApp
-        response = MessagingResponse()
         response.message(bot_reply)
         return str(response)
 
-    return "Bot endpoint is ready!"
+    return "Bot endpoint is ready."
 
 if __name__ == "__main__":
     from waitress import serve
     serve(app, host="0.0.0.0", port=8080)
+
 
 
 
