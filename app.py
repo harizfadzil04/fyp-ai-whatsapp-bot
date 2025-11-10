@@ -8,7 +8,7 @@ from waitress import serve
 app = Flask(__name__)
 
 # Set your OpenAI API key (recommended: set via environment variable in Railway)
-openai.api_key = os.getenv("OPENAI_API_KEY", "YOUR_OPENAI_API_KEY_HERE")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route("/", methods=["GET"])
 def home():
@@ -49,6 +49,7 @@ def bot():
 if __name__ == "__main__":
     from waitress import serve
     serve(app, host="0.0.0.0", port=8080)
+
 
 
 
