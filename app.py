@@ -1,6 +1,6 @@
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
-import openai
+from openai import OpenAI
 import os
 from waitress import serve
 
@@ -55,6 +55,7 @@ except Exception as e:
 if __name__ == "__main__":
     from waitress import serve
     serve(app, host="0.0.0.0", port=8080)
+
 
 
 
