@@ -11,25 +11,25 @@ def home():
 @app.route("/bot", methods=["POST", "GET"])
 def bot():
     if request.method == "POST":
-        incoming_msg = request.values.get('Body', '').lower()
+        incoming_msg = request.values.get("Body", "").lower()
         print(f"Incoming message: {incoming_msg}")
 
-        user_message = request.form.get('Body')
-        print("User said:", user_message)
+        # Example basic reply (you can replace this later)
+        bot_reply = "Hello! Your bot is connected successfully 🚀"
 
-        result = subprocess.run(["python", "conversation_bot.py", user_message],
-                                capture_output=True, text=True)
-
-        bot_reply = result.stdout.strip()
+        # Build Twilio XML response
         response = MessagingResponse()
         response.message(bot_reply)
         return str(response)
 
-    return "Message received"
+    # For GET request (when you test from browser)
+    return "Bot endpoint is ready!"
 
 if __name__ == "__main__":
     from waitress import serve
     serve(app, host="0.0.0.0", port=8080)
+
+
 
 
 
