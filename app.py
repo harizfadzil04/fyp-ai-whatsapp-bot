@@ -22,16 +22,22 @@ def bot():
 
         try:
             # Send user message to OpenAI GPT
-            ai_response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an AI assistant that helps aviation maintenance students with project ideas and technical explanations in simple, friendly terms."
-                    },
-                    {"role": "user", "content": incoming_msg}
-                ]
-            )
+         try:
+    from openai import OpenAI
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+    ai_response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful WhatsApp bot."},
+            {"role": "user", "content": incoming_msg}
+        ]
+    )
+
+    bot_reply = ai_response.choices[0].message.content
+except Exception as e:
+    print(f"Error: {e}")
+    bot_reply = "⚠️ Sorry, I had a problem generating a response. Please try again later."
 
             bot_reply = ai_response["choices"][0]["message"]["content"].strip()
 
@@ -49,6 +55,7 @@ def bot():
 if __name__ == "__main__":
     from waitress import serve
     serve(app, host="0.0.0.0", port=8080)
+
 
 
 
